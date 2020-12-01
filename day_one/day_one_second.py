@@ -1,30 +1,31 @@
+import time
+
+
+target_value = 2020
+
+
 def read_ints(filename):
     with open(filename) as file:
         return [int(row) for row in file]
 
 
 def find_combo_linear():
-    """ Tries to find the combination of three numbers from the list with the sum 2020 using linear searching.
+    """ Tries to find the combination of three numbers from the list with the sum target_value using linear searching.
         O(n^3) complexity. """
 
-    expenses = read_ints('data_first.txt')
+    expenses = sorted(read_ints('data_first.txt'))
 
-    first_index = 0
+    while len(expenses):
+        first_value = expenses.pop()
 
-    while first_index < len(expenses) - 1:
-        first_value = expenses[first_index]
-        second_index = first_index + 1
+        for second_index, second_value in enumerate(expenses):
+            current_total = first_value + second_value
+            if current_total > target_value:
+                continue
 
-        while second_index < len(expenses) - 1:
-            second_value = expenses[second_index]
-
-            for third_value in expenses[second_index + 1:]:
-                if first_value + second_value + third_value == 2020:
-                    return first_value, second_value, third_value
-
-            second_index += 1
-
-        first_index += 1
+            diff = target_value - current_total
+            if diff in expenses[second_index + 1:]:
+                return first_value, second_value, diff
 
     return None
 
@@ -32,52 +33,51 @@ def find_combo_linear():
 def find_combo_log():
     expenses = sorted(read_ints('data_first.txt'))
 
-    first_index = 0
+    while len(expenses):
+        first_value = expenses.pop()
 
-    while first_index < len(expenses) - 1:
-        first_value = expenses[first_index]
-        second_index = first_index + 1
+        for second_index, second_value in enumerate(expenses):
+            current_total = first_value + second_value
+            if current_total > target_value:
+                continue
 
-        while second_index < len(expenses) - 1:
-            second_value = expenses[second_index]
-
-            combo = test_combo_log(first_value, second_value, second_index + 1, len(expenses) - 1, expenses)
-            if combo is not None:
-                return combo
-
-            second_index += 1
-
-        first_index += 1
+            diff = target_value - current_total
+            if combo_find(diff, 0, len(expenses) - 1, expenses):
+                return first_value, second_value, diff
 
     return None
 
 
-def test_combo_log(first_value, second_value, start_index, end_index, expenses):
+def combo_find(value, start_index, end_index, expenses):
+    middle_index = start_index + ((end_index - start_index) >> 1)
+    middle_value = expenses[middle_index]
 
-    test_index = start_index + int((end_index - start_index) / 2)
-    third_value = expenses[test_index]
-    combo_value = first_value + second_value + third_value
+    if middle_value == value:
+        return True
 
-    if combo_value == 2020:
-        return first_value, second_value, third_value
+    elif value > middle_value and middle_index < end_index:
+        return combo_find(value, middle_index + 1, end_index, expenses)
 
-    elif combo_value > 2020 and start_index < test_index:
-        return test_combo_log(first_value, second_value, start_index, test_index - 1, expenses)
+    elif start_index < middle_index:
+        return combo_find(value, start_index, middle_index - 1, expenses)
 
-    elif test_index < end_index:
-        return test_combo_log(first_value, second_value, test_index + 1, end_index, expenses)
-
-    return None
+    return False
 
 
 if __name__ == '__main__':
 
+    linear_start = time.perf_counter_ns()
     combo = find_combo_linear()
+    linear_end = time.perf_counter_ns()
     if combo is not None:
+        duration = (linear_end - linear_start) / 1000000
         product = combo[0] * combo[1] * combo[2]
-        print('Linear: The answer is {} * {} * {} = {}'.format(combo[0], combo[1], combo[2], product))
+        print('Linear({}ms): The answer is {} * {} * {} = {}'.format(duration, combo[0], combo[1], combo[2], product))
 
+    log_start = time.perf_counter_ns()
     combo2 = find_combo_log()
+    log_end = time.perf_counter_ns()
     if combo2 is not None:
+        duration = (log_end - log_start) / 1000000
         product = combo2[0] * combo2[1] * combo2[2]
-        print('Linear: The answer is {} * {} * {} = {}'.format(combo2[0], combo2[1], combo2[2], product))
+        print('Log({}ms): The answer is {} * {} * {} = {}'.format(duration, combo2[0], combo2[1], combo2[2], product))

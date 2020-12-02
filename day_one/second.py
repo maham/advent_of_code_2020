@@ -9,11 +9,9 @@ def read_ints(filename):
         return [int(row) for row in file]
 
 
-def find_combo_linear():
+def find_combo_linear(expenses):
     """ Tries to find the combination of three numbers from the list with the sum target_value using linear searching.
         O(n^3) complexity. """
-
-    expenses = sorted(read_ints('data_first.txt'))
 
     while len(expenses):
         first_value = expenses.pop()
@@ -30,8 +28,8 @@ def find_combo_linear():
     return None
 
 
-def find_combo_log():
-    expenses = sorted(read_ints('data_first.txt'))
+def find_combo_log(expenses):
+    """ INSERT DESCRIPTION """
 
     while len(expenses):
         first_value = expenses.pop()
@@ -66,16 +64,18 @@ def combo_find(value, start_index, end_index, expenses):
 
 if __name__ == '__main__':
 
+    expenses = read_ints('expenses.txt')
     linear_start = time.perf_counter_ns()
-    combo = find_combo_linear()
+    combo = find_combo_linear(expenses)
     linear_end = time.perf_counter_ns()
     if combo is not None:
         duration = (linear_end - linear_start) / 1000000
         product = combo[0] * combo[1] * combo[2]
         print('Linear({}ms): The answer is {} * {} * {} = {}'.format(duration, combo[0], combo[1], combo[2], product))
 
+    expenses = sorted(read_ints('expenses.txt'))
     log_start = time.perf_counter_ns()
-    combo2 = find_combo_log()
+    combo2 = find_combo_log(expenses)
     log_end = time.perf_counter_ns()
     if combo2 is not None:
         duration = (log_end - log_start) / 1000000

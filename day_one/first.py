@@ -6,7 +6,7 @@ def read_ints(filename):
 def find_combo_linear():
     """ Tries to find the combination of two entries from the list with the sum 2020. O(n^2) complexity. """
 
-    expenses = read_ints('data_first.txt')
+    expenses = read_ints('expenses.txt')
     first_index = 0
 
     while first_index < len(expenses) - 1:
@@ -24,7 +24,7 @@ def find_combo_linear():
 def find_combo_log():
     """ Tries to find the combination of two entries from the list with the sum 2020. O(n log n) complexity. """
 
-    expenses = sorted(read_ints('data_first.txt'))
+    expenses = sorted(read_ints('expenses.txt'))
     for index in range(len(expenses) - 1):
         combo = test_combo_log(expenses[index], index + 1, len(expenses) - 1, expenses)
         if combo is not None:
